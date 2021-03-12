@@ -10,7 +10,7 @@
 
     <modules>
         <module>competitive-core</module>
-        <module>atlas</module>
+        <!--<module>atlas</module>-->
         <module>pgm</module>
     </modules>
 
@@ -22,10 +22,6 @@
 
     <repositories>
         <!-- PGM -->
-        <repository>
-            <id>vector-private</id>
-            <url>https://repo.vectormc.net/artifactory/private</url>
-        </repository>
         <repository>
             <id>pgm-ac</id>
             <url>https://repo.ashcon.app/content/repositories/snapshots</url>
@@ -44,7 +40,7 @@
                 <artifactId>tally-bukkitcore</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
-            <dependency>
+            <!--<dependency>
                 <groupId>net.avicus</groupId>
                 <artifactId>atlas-core</artifactId>
                 <version>1.8.8-SNAPSHOT</version>
@@ -67,7 +63,7 @@
                 <artifactId>library</artifactId>
                 <version>1.8.8-SNAPSHOT</version>
                 <scope>provided</scope>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>app.ashcon</groupId>
                 <artifactId>sportpaper</artifactId>

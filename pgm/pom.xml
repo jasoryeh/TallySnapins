@@ -36,12 +36,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.avicus</groupId>
-            <artifactId>atlas-core</artifactId>
-            <version>1.8.8-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>tc.oc.pgm</groupId>
             <artifactId>core</artifactId>
             <version>0.9-SNAPSHOT</version>
