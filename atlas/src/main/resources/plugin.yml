@@ -1,5 +1,5 @@
 name: Tally-Snapin-PGM
 main: tk.jasonho.tally.snapin.TallySnapin
-version: 1.0
+version: 1.9
 author: Jason Ho
 depend: [Tally]
