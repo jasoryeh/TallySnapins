@@ -50,7 +50,7 @@ public class PGMListener extends TallyListener {
         if(competitor != null) {
             Collection<MatchPlayer> players = competitor.getPlayers();
             players.forEach(p -> {
-                UUID id = p.getId();
+                UUID id = p.getBukkit().getUniqueId();
                 super.operationHandler.track("goalevent_" + event.getClass().getSimpleName(), null, id, jsonObject);
             });
         }
@@ -63,12 +63,12 @@ public class PGMListener extends TallyListener {
 
         event.getContributions().forEach(contribution ->
                 contribution.getPlayerState().getPlayer().ifPresent(p ->
-                        super.operationHandler.track("goalcompletevent_contribution", null, p.getId(), jsonObject)));
+                        super.operationHandler.track("goalcompletevent_contribution", null, p.getBukkit().getUniqueId(), jsonObject)));
 
         if(competitor != null) {
             Collection<MatchPlayer> players = competitor.getPlayers();
             players.forEach(p -> {
-                UUID id = p.getId();
+                UUID id = p.getBukkit().getUniqueId();
                 super.operationHandler.track("goalcompleteevent", null, id, jsonObject);
             });
         }
@@ -81,10 +81,10 @@ public class PGMListener extends TallyListener {
         JsonObject jsonObject = PGMUtils.pgmEventToData(event);
 
         if(newTeam != null) {
-            newTeam.getPlayers().forEach(p -> super.operationHandler.track("objective_hillcapture_win", null, p.getId(), jsonObject));
+            newTeam.getPlayers().forEach(p -> super.operationHandler.track("objective_hillcapture_win", null, p.getBukkit().getUniqueId(), jsonObject));
         }
         if(oldTeam != null) {
-            oldTeam.getPlayers().forEach(p -> super.operationHandler.track("objective_hillcapture_lose", null, p.getId(), jsonObject));
+            oldTeam.getPlayers().forEach(p -> super.operationHandler.track("objective_hillcapture_lose", null, p.getBukkit().getUniqueId(), jsonObject));
         }
     }
 
@@ -95,10 +95,10 @@ public class PGMListener extends TallyListener {
         JsonObject jsonObject = PGMUtils.pgmEventToData(event);
 
         if(newTeam != null) {
-            newTeam.getPlayers().forEach(p -> super.operationHandler.track("objective_hillcontrol_win", null, p.getId(), jsonObject));
+            newTeam.getPlayers().forEach(p -> super.operationHandler.track("objective_hillcontrol_win", null, p.getBukkit().getUniqueId(), jsonObject));
         }
         if(oldTeam != null) {
-            oldTeam.getPlayers().forEach(p -> super.operationHandler.track("objective_hillcontrol_lose", null, p.getId(), jsonObject));
+            oldTeam.getPlayers().forEach(p -> super.operationHandler.track("objective_hillcontrol_lose", null, p.getBukkit().getUniqueId(), jsonObject));
         }
     }
 
@@ -109,9 +109,9 @@ public class PGMListener extends TallyListener {
 
         JsonObject jsonObject = PGMUtils.pgmEventToData(event);
         if(flagCaptureTeam != null) {
-            flagCaptureTeam.getPlayers().forEach(p -> super.operationHandler.track("flag_capture_support", null, p.getId(), jsonObject));
+            flagCaptureTeam.getPlayers().forEach(p -> super.operationHandler.track("flag_capture_support", null, p.getBukkit().getUniqueId(), jsonObject));
         }
-        super.operationHandler.track("flag_capture_capture", null, flagCapturePlayer.getId(), jsonObject);
+        super.operationHandler.track("flag_capture_capture", null, flagCapturePlayer.getBukkit().getUniqueId(), jsonObject);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -119,7 +119,7 @@ public class PGMListener extends TallyListener {
         MatchPlayer flagCapturePlayer = event.getCarrier();
 
         JsonObject jsonObject = PGMUtils.pgmEventToData(event);
-        super.operationHandler.track("flag_carry", null, flagCapturePlayer.getId(), jsonObject);
+        super.operationHandler.track("flag_carry", null, flagCapturePlayer.getBukkit().getUniqueId(), jsonObject);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -156,7 +156,7 @@ public class PGMListener extends TallyListener {
         UUID exclude = null;
         ParticipantState killer = event.getKiller();
         if(killer != null && killer.getPlayer().isPresent()) {
-            exclude = killer.getPlayer().get().getId();
+            exclude = killer.getPlayer().get().getBukkit().getUniqueId();
         }
 
         // Assists
@@ -166,9 +166,9 @@ public class PGMListener extends TallyListener {
 
         Map<UUID, Pair<AtomicDouble, AtomicInteger>> assisters = new HashMap<>();
         for (DamageTrackModule.DamageExchange exc : damageExchanges) {
-            if(exc.getDirection() == DamageTrackModule.DamageDirection.GIVE && exc.getYou() == killed.getId()) {
+            if(exc.getDirection() == DamageTrackModule.DamageDirection.GIVE && exc.getYou() == killed.getBukkit().getUniqueId()) {
                 if(exc.getMe() == exclude // is the killer
-                        || exc.getMe() == killed.getId() // or is suicide
+                        || exc.getMe() == killed.getBukkit().getUniqueId() // or is suicide
                         || exc.isCreditRewarded()) { // or is already tracked/rewarded
                     continue;
                 }
@@ -188,12 +188,12 @@ public class PGMListener extends TallyListener {
         // track!
         JsonObject jsonObject = PGMUtils.pgmEventToData(event);
         jsonObject.addProperty("caused_by_type", damage);
-        jsonObject.addProperty("assisted", killer.getId().toString());
+        jsonObject.addProperty("assisted", killer.getPlayer().get().getBukkit().getUniqueId().toString());
 
         if(killer != null && killer.getPlayer().isPresent()) {
-            operationHandler.trackPVPTransaction(killer.getPlayer().get().getId(), killed.getId(), damage);
+            operationHandler.trackPVPTransaction(killer.getPlayer().get().getBukkit().getUniqueId(), killed.getBukkit().getUniqueId(), damage);
         } else {
-            operationHandler.trackPVPTransaction(DamageTrackModule.ENVIRONMENT, killed.getId(), damage);
+            operationHandler.trackPVPTransaction(DamageTrackModule.ENVIRONMENT, killed.getBukkit().getUniqueId(), damage);
         }
 
         for (Map.Entry<UUID, Pair<AtomicDouble, AtomicInteger>> assist : assisters.entrySet()) {
@@ -206,7 +206,7 @@ public class PGMListener extends TallyListener {
                 }
 
                 jsonObject.addProperty("caused_by_type", damage);
-                operationHandler.track(StatType.ASSIST, killed.getId(), assister.getUniqueId(), jsonObject);
+                operationHandler.track(StatType.ASSIST, killed.getBukkit().getUniqueId(), assister.getUniqueId(), jsonObject);
             }
         }
     }
@@ -225,7 +225,7 @@ public class PGMListener extends TallyListener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpawn(PlayerSpawnEvent e) {
         // Reset damage tracker
-        ((CompetitiveOperations) super.operationHandler).handleRespawn(e.getPlayer().getId());
+        ((CompetitiveOperations) super.operationHandler).handleRespawn(e.getPlayer().getBukkit().getUniqueId());
     }
 
     // Extra stats
@@ -240,19 +240,19 @@ public class PGMListener extends TallyListener {
         List<UUID> observers = match.getPlayers()
                 .stream()
                 .filter(p -> p.getParty().isObserving())
-                .map(MatchPlayer::getId)
+                .map(mp -> mp.getBukkit().getUniqueId())
                 .collect(Collectors.toList());
         List<UUID> winners = match.getPlayers()
                 .stream()
                 .filter(p -> (winner == p.getParty()))
-                .map(MatchPlayer::getId)
+                .map(mp -> mp.getBukkit().getUniqueId())
                 .collect(Collectors.toList());
         List<UUID> losers = match.getPlayers()
                 .stream()
                 .filter(p -> (winner != p.getParty()) && (p.getParty() instanceof Team))
-                .map(MatchPlayer::getId)
+                .map(mp -> mp.getBukkit().getUniqueId())
                 .collect(Collectors.toList());
-        List<UUID> everyone = match.getParticipants().stream().map(MatchPlayer::getId).collect(Collectors.toList());
+        List<UUID> everyone = match.getParticipants().stream().map(mp -> mp.getBukkit().getUniqueId()).collect(Collectors.toList());
 
         CompetitiveOperations operationHandler = ((CompetitiveOperations) super.operationHandler);
         operationHandler.trackMatchParticipants(

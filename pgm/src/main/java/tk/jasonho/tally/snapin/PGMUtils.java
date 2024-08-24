@@ -54,7 +54,7 @@ public class PGMUtils {
         for (Competitor competitor : m.getCompetitors()) {
             JsonArray people = new JsonArray();
             for (MatchPlayer player : competitor.getPlayers()) {
-                people.add(new JsonPrimitive(player.getId().toString()));
+                people.add(new JsonPrimitive(player.getBukkit().getUniqueId().toString()));
             }
             competitors.add("competitor_" + competitor.getDefaultName().replaceAll(" ", "_"), people);
         }
@@ -87,7 +87,7 @@ public class PGMUtils {
                     MatchPlayerState playerState = contribution.getPlayerState();
                     Optional<MatchPlayer> player = playerState.getPlayer();
                     contributions.addProperty(
-                            (player.isPresent() ? player.get().getId().toString() : "unknown") + ctrb++,
+                            (player.isPresent() ? player.get().getBukkit().getUniqueId().toString() : "unknown") + ctrb++,
                             contribution.getPercentage());
                 }
                 jsonObject.add("goal_contributions", contributions);
