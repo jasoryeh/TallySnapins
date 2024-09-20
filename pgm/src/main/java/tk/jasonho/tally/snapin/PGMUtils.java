@@ -47,18 +47,37 @@ public class PGMUtils {
         return jsonObject;
     }
 
+    public static JsonObject matchPlayerToInfo(MatchPlayer matchPlayer) {
+        JsonObject jsonObject = new JsonObject();
+
+        JsonObject coords = new JsonObject();
+        coords.add("x", new JsonPrimitive(matchPlayer.getLocation().getX()));
+        coords.add("y", new JsonPrimitive(matchPlayer.getLocation().getY()));
+        coords.add("z", new JsonPrimitive(matchPlayer.getLocation().getZ()));
+        coords.add("yaw", new JsonPrimitive(matchPlayer.getLocation().getYaw()));
+        coords.add("pitch", new JsonPrimitive(matchPlayer.getLocation().getPitch()));
+        jsonObject.add("location", coords);
+
+        jsonObject.add("gamemode", new JsonPrimitive(matchPlayer.getGameMode().toString()));
+        jsonObject.add("alive", new JsonPrimitive(matchPlayer.isAlive()));
+
+        return jsonObject;
+    }
+
     public static JsonObject matchInfo(Match m) {
         JsonObject jsonObject = new JsonObject();
 
         JsonObject competitors = new JsonObject();
         for (Competitor competitor : m.getCompetitors()) {
-            JsonArray people = new JsonArray();
+            JsonObject people = new JsonObject();
             for (MatchPlayer player : competitor.getPlayers()) {
-                people.add(new JsonPrimitive(player.getBukkit().getUniqueId().toString()));
+                people.add(player.getBukkit().getUniqueId().toString(), matchPlayerToInfo(player));
             }
             competitors.add("competitor_" + competitor.getDefaultName().replaceAll(" ", "_"), people);
         }
         jsonObject.add("competitors", competitors);
+        jsonObject.add("map", new JsonPrimitive(m.getMap().getName()));
+        jsonObject.add("phase", new JsonPrimitive(m.getPhase().toString()));
         return jsonObject;
     }
 
