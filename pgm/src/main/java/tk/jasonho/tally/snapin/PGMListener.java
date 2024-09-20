@@ -25,6 +25,7 @@ import tc.oc.pgm.flag.event.FlagCaptureEvent;
 import tc.oc.pgm.flag.event.FlagPickupEvent;
 import tc.oc.pgm.goals.events.GoalCompleteEvent;
 import tc.oc.pgm.goals.events.GoalEvent;
+import tc.oc.pgm.goals.events.GoalTouchEvent;
 import tc.oc.pgm.spawns.events.PlayerSpawnEvent;
 import tc.oc.pgm.teams.Team;
 import tc.oc.pgm.tracker.info.*;
@@ -70,6 +71,20 @@ public class PGMListener extends TallyListener {
             players.forEach(p -> {
                 UUID id = p.getBukkit().getUniqueId();
                 super.operationHandler.track("goalcompleteevent", null, id, jsonObject);
+            });
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onGoalTouchEvent(GoalTouchEvent event) {
+        Competitor competitor = event.getCompetitor();
+        JsonObject jsonObject = PGMUtils.pgmEventToData(event);
+
+        if(competitor != null) {
+            Collection<MatchPlayer> players = competitor.getPlayers();
+            players.forEach(p -> {
+                UUID id = p.getBukkit().getUniqueId();
+                super.operationHandler.track("goaltouchevent", null, id, jsonObject);
             });
         }
     }
