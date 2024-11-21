@@ -1,6 +1,7 @@
 package tk.jasonho.tally.snapin;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
@@ -22,6 +23,9 @@ import tc.oc.pgm.api.tracker.info.MeleeInfo;
 import tc.oc.pgm.api.tracker.info.PotionInfo;
 import tc.oc.pgm.controlpoint.events.CapturingTeamChangeEvent;
 import tc.oc.pgm.controlpoint.events.ControllerChangeEvent;
+import tc.oc.pgm.events.PlayerJoinMatchEvent;
+import tc.oc.pgm.events.PlayerJoinPartyEvent;
+import tc.oc.pgm.events.PlayerLeavePartyEvent;
 import tc.oc.pgm.flag.event.FlagCaptureEvent;
 import tc.oc.pgm.flag.event.FlagPickupEvent;
 import tc.oc.pgm.goals.events.GoalCompleteEvent;
@@ -44,6 +48,45 @@ public class PGMListener extends TallyListener {
 
     public PGMListener(TallyOperationHandler handler) {
         super(handler);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPartyJoin(PlayerJoinPartyEvent event) {
+        JsonObject jsonObject = PGMUtils.pgmEventToData(event);
+        if (event.getNewParty() != null) {
+            PGMUtils.extract(event.getNewParty(), "newParty", jsonObject);
+        } else {
+            jsonObject.add("newParty", JsonNull.INSTANCE);
+        }
+
+        super.operationHandler.track(
+                event.getClass().getSimpleName(),
+                null,
+                event.getPlayer().getBukkit().getUniqueId(),
+                jsonObject);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPartyLeave(PlayerLeavePartyEvent event) {
+        JsonObject jsonObject = PGMUtils.pgmEventToData(event);
+        PGMUtils.extract(event.getParty(), "oldParty", jsonObject);
+
+        super.operationHandler.track(
+                event.getClass().getSimpleName(),
+                null,
+                event.getPlayer().getBukkit().getUniqueId(),
+                jsonObject);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onJoinMatch(PlayerJoinMatchEvent event) {
+        JsonObject jsonObject = PGMUtils.pgmEventToData(event);
+
+        super.operationHandler.track(
+                event.getClass().getSimpleName(),
+                null,
+                event.getPlayer().getBukkit().getUniqueId(),
+                jsonObject);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -84,6 +84,25 @@ public class PGMUtils {
         return jsonObject;
     }
 
+    public static <T> JsonObject extract(T o, String key, JsonObject existingObject) {
+        JsonObject jsonObject = new JsonObject();
+
+        for (Field declaredField : o.getClass().getDeclaredFields()) {
+            declaredField.setAccessible(true);
+            try {
+                jsonObject.add(declaredField.getName(), new JsonPrimitive(declaredField.get(o).toString()));
+            } catch (Exception e) {
+                System.out.println("Error capturing field in class: " + o.getClass().getCanonicalName() + "/" + declaredField.getName());
+                e.printStackTrace();
+            }
+            declaredField.setAccessible(false);
+        }
+
+        existingObject.add(key, jsonObject);
+
+        return existingObject;
+    }
+
     public static JsonObject playerStats(PlayerStats playerStat, JsonObject matchData) {
         Gson gson = new Gson();
         JsonObject src = gson.fromJson(gson.toJson(matchData), JsonObject.class);
