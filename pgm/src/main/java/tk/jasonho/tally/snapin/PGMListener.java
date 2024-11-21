@@ -334,7 +334,7 @@ public class PGMListener extends TallyListener {
                 inconclusive,
                 jsonObject
         );
-        operationHandler.track(event.getClass().getName(), null, null, jsonObject);
+        operationHandler.track(event.getClass().getSimpleName(), null, null, jsonObject);
 
         Bukkit.getLogger().info("Tally is tracking stats on " + match.getParticipants().size() + " participants");
         StatsMatchModule statsModule = event.getMatch().getModule(StatsMatchModule.class);
