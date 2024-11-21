@@ -246,6 +246,14 @@ public class PGMListener extends TallyListener {
         ((CompetitiveOperations) super.operationHandler).handleRespawn(e.getPlayer().getBukkit().getUniqueId());
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onMatchStart(MatchStartEvent e) {
+        JsonObject jsonObject = PGMUtils.pgmEventToData(e);
+
+        TallyOperationHandler handler = super.operationHandler;
+        handler.track(e.getClass().getSimpleName(), null, null, jsonObject);
+    }
+
     // Extra stats
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onWin(MatchFinishEvent event) {
@@ -281,6 +289,7 @@ public class PGMListener extends TallyListener {
                 inconclusive,
                 jsonObject
         );
+        operationHandler.track(event.getClass().getName(), null, null, jsonObject);
 
         Bukkit.getLogger().info("Tally is tracking stats on " + match.getParticipants().size() + " participants");
         StatsMatchModule statsModule = event.getMatch().getModule(StatsMatchModule.class);
