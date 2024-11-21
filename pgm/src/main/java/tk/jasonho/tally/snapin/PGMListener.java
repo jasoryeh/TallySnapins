@@ -276,11 +276,13 @@ public class PGMListener extends TallyListener {
     public void onMatchHi(MatchLoadEvent e) {
         super.operationHandler.getTally()
                 .loadTracker(new DefaultDamageTrackModule(super.operationHandler,e.getWorld().getName() + "-" + e.getMatch().getId()));
+        super.operationHandler.track(e.getClass().getSimpleName(), null, null, PGMUtils.pgmEventToData(e));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMatchBye(MatchUnloadEvent e) {
         super.operationHandler.getTally().unloadTracker();
+        super.operationHandler.track(e.getClass().getSimpleName(), null, null, PGMUtils.pgmEventToData(e));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
