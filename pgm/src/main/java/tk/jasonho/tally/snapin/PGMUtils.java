@@ -1,6 +1,5 @@
 package tk.jasonho.tally.snapin;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -20,7 +19,10 @@ import tc.oc.pgm.goals.Contribution;
 import tc.oc.pgm.goals.Goal;
 import tc.oc.pgm.goals.events.GoalCompleteEvent;
 import tc.oc.pgm.goals.events.GoalEvent;
+import tc.oc.pgm.stats.PlayerStats;
+import tc.oc.pgm.stats.StatsMatchModule;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 public class PGMUtils {
@@ -78,6 +80,23 @@ public class PGMUtils {
         jsonObject.add("competitors", competitors);
         jsonObject.add("map", new JsonPrimitive(m.getMap().getName()));
         jsonObject.add("phase", new JsonPrimitive(m.getPhase().toString()));
+        return jsonObject;
+    }
+
+    public static JsonObject playerStats(PlayerStats playerStat) {
+        JsonObject jsonObject = new JsonObject();
+
+        for (Field declaredField : playerStat.getClass().getDeclaredFields()) {
+            declaredField.setAccessible(true);
+            try {
+                jsonObject.add(declaredField.getName(), new JsonPrimitive(declaredField.get(playerStat).toString()));
+            } catch (Exception e) {
+                System.out.println("Error capturing PGM stat field: " + declaredField.getName());
+                e.printStackTrace();
+            }
+            declaredField.setAccessible(false);
+        }
+
         return jsonObject;
     }
 

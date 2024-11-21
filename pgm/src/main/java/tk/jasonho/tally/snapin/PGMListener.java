@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
+import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.match.event.MatchUnloadEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.player.MatchPlayer;
@@ -27,6 +28,8 @@ import tc.oc.pgm.goals.events.GoalCompleteEvent;
 import tc.oc.pgm.goals.events.GoalEvent;
 import tc.oc.pgm.goals.events.GoalTouchEvent;
 import tc.oc.pgm.spawns.events.PlayerSpawnEvent;
+import tc.oc.pgm.stats.PlayerStats;
+import tc.oc.pgm.stats.StatsMatchModule;
 import tc.oc.pgm.teams.Team;
 import tc.oc.pgm.tracker.info.*;
 import tk.jasonho.tally.core.bukkit.*;
@@ -278,5 +281,22 @@ public class PGMListener extends TallyListener {
                 inconclusive,
                 jsonObject
         );
+
+        Bukkit.getLogger().info("Tally is tracking stats on " + match.getParticipants().size() + " participants");
+        StatsMatchModule statsModule = event.getMatch().getModule(StatsMatchModule.class);
+        if (statsModule == null) {
+            Bukkit.getLogger().warning("Could not track PGM stats summary, the stats module was not available on this match!");
+            return;
+        }
+
+        for (MatchPlayer participant : match.getParticipants()) {
+            PlayerStats playerStat = statsModule.getPlayerStat(participant);
+            if (playerStat == null) {
+                Bukkit.getLogger().warning("Player " + participant.getName() + "'s stats were not available for this match.");
+                continue;
+            }
+            JsonObject playerStats = PGMUtils.playerStats(playerStat);
+            operationHandler.track("pgm_stats_summary", null, participant.getBukkit().getUniqueId(), playerStats);
+        }
     }
 }
