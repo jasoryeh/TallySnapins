@@ -304,7 +304,7 @@ public class PGMListener extends TallyListener {
                 Bukkit.getLogger().warning("Player " + participant.getName() + "'s stats were not available for this match.");
                 continue;
             }
-            JsonObject playerStats = PGMUtils.playerStats(playerStat);
+            JsonObject playerStats = PGMUtils.playerStats(playerStat, jsonObject);
             operationHandler.track("pgm_stats_summary", null, participant.getBukkit().getUniqueId(), playerStats);
         }
     }

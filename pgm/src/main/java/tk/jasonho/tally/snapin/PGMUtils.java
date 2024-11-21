@@ -1,5 +1,6 @@
 package tk.jasonho.tally.snapin;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -83,7 +84,9 @@ public class PGMUtils {
         return jsonObject;
     }
 
-    public static JsonObject playerStats(PlayerStats playerStat) {
+    public static JsonObject playerStats(PlayerStats playerStat, JsonObject matchData) {
+        Gson gson = new Gson();
+        JsonObject src = gson.fromJson(gson.toJson(matchData), JsonObject.class);
         JsonObject jsonObject = new JsonObject();
 
         for (Field declaredField : playerStat.getClass().getDeclaredFields()) {
@@ -97,7 +100,9 @@ public class PGMUtils {
             declaredField.setAccessible(false);
         }
 
-        return jsonObject;
+        src.add("pgm_stats", jsonObject);
+
+        return src;
     }
 
     public static JsonObject pgmEventToData(Event event) {
