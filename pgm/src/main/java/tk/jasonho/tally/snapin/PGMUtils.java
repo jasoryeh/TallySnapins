@@ -90,7 +90,8 @@ public class PGMUtils {
         for (Field declaredField : o.getClass().getDeclaredFields()) {
             declaredField.setAccessible(true);
             try {
-                jsonObject.add(declaredField.getName(), new JsonPrimitive(declaredField.get(o).toString()));
+                Object fieldValue = declaredField.get(o);
+                jsonObject.add(declaredField.getName(), new JsonPrimitive(fieldValue == null ? "<null>" : fieldValue.toString()));
             } catch (Exception e) {
                 System.out.println("Error capturing field in class: " + o.getClass().getCanonicalName() + "/" + declaredField.getName());
                 e.printStackTrace();
