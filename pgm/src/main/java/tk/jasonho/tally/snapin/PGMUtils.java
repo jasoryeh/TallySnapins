@@ -112,7 +112,8 @@ public class PGMUtils {
         for (Field declaredField : playerStat.getClass().getDeclaredFields()) {
             declaredField.setAccessible(true);
             try {
-                jsonObject.add(declaredField.getName(), new JsonPrimitive(declaredField.get(playerStat).toString()));
+                Object field = declaredField.get(playerStat);
+                jsonObject.add(declaredField.getName(), field != null ? new JsonPrimitive(field.toString()) : JsonNull.INSTANCE);
             } catch (Exception e) {
                 System.out.println("Error capturing PGM stat field: " + declaredField.getName());
                 e.printStackTrace();
