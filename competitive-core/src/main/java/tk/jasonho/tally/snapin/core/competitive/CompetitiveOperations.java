@@ -21,9 +21,7 @@ public class CompetitiveOperations extends TallyOperationHandler {
         super.track(type.toString(), loser, victor, jsonObject);
     }
 
-    public void trackPVPTransaction(UUID victor, UUID loser, String cause) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("caused_by_type", cause);
+    public void trackPVPTransaction(UUID victor, UUID loser, JsonObject jsonObject) {
         // receiver = owner of stat
         // actor = person who caused this stat to happen to the receiver
         // actor caused addition of <stat type> stat to receiver

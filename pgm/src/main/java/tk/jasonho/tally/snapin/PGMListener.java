@@ -264,9 +264,9 @@ public class PGMListener extends TallyListener {
         jsonObject.add("damage_info", damageInfo);
         if(killer != null && killer.getPlayer().isPresent()) {
             jsonObject.addProperty("assisted", killer.getPlayer().get().getBukkit().getUniqueId().toString());
-            operationHandler.trackPVPTransaction(killer.getPlayer().get().getBukkit().getUniqueId(), killed.getBukkit().getUniqueId(), damage);
+            operationHandler.trackPVPTransaction(killer.getPlayer().get().getBukkit().getUniqueId(), killed.getBukkit().getUniqueId(), jsonObject);
         } else {
-            operationHandler.trackPVPTransaction(DamageTrackModule.ENVIRONMENT, killed.getBukkit().getUniqueId(), damage);
+            operationHandler.trackPVPTransaction(DamageTrackModule.ENVIRONMENT, killed.getBukkit().getUniqueId(), jsonObject);
         }
 
         for (Map.Entry<UUID, Pair<AtomicDouble, AtomicInteger>> assist : assisters.entrySet()) {
