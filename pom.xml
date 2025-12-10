@@ -24,7 +24,7 @@
         <!-- PGM -->
         <repository>
             <id>pgm-ac</id>
-            <url>https://repo.ashcon.app/content/repositories/snapshots</url>
+            <url>https://repo.pgm.fyi/snapshots</url>
         </repository>
     </repositories>
 
